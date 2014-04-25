@@ -37,7 +37,7 @@ build script is doing it.
 Additional Projects
 -------------------
 
-- The VM: [https://github.com/16candles/16c]
+- The VM: [16c](https://github.com/16candles/16c)
 - Compiler written in Haskell (supports when/unless):
   [h16cc](https://github.com/llllllllll/16candles_haskell)
 - Compiler written in C: [16cc](https://github.com/16candles/16cc)
