@@ -1,0 +1,188 @@
+2014-02-03 Jack Pugmire <comradetechnology@gmail.com>
+	* ChangeLog: added ChangeLog
+	* src/common: added src/common directory
+	* src/common/arch.h: moved arch.h to common
+
+2014-02-04 Joe Jevnik <joejev@gmail.com>
+	* src/common/arch.h: Prefixed register bytes with OP_, added more
+	typedefs
+	* src/compiler/processor.c: Started the processing commands
+	* src/compiler/processor.h: Added and started
+	* src/compiler/operations.c: Added the binary, comparison, and unary
+	operators
+	* src/compiler/operations.h: Added types for the different kinds of
+	operators as function pointers
+	* src/compiler/memory.c: Added a simple test memory model
+	* src/compiler/memory.h: Added a simple test memory model
+	* src/compiler/makefile: added src/compiler/makefile
+	* examples/bin_op_test.16c: Added test file
+	* examples/cmp_op_test.16c: Added test file
+	* examples/goodbyeworld.16c: Fixed ascii codes
+	* TODO: added TODO
+
+2014-02-04 Jack Pugmire <comradetechnology@gmail.com>
+	* src/machine/memory.c, src/machine/memory.h: rewrote memory
+	infrastructure using a memory-mapped file to represent virtual
+	memory.
+	* src/machine/processor.c, src/machine/processor.h: changed
+	processor to work with the new memory system
+	* src/machine/processor.c: removed extra #include directives from
+	the source file
+	* TODO: updated TODO
+
+2014-02-04 Jack Pugmire <comradetechnology@gmail.com>
+	* CMakeLists.txt, src/CMakeLists.txt, src/compiler/makefile,
+	src/machine/makefile: replaced makefiles with CMakeLists
+	* INSTALL: added INSTALL
+	* README.md: updated README.md
+	* TODO: updated TODO
+	* ChangeLog: bracketed emails with '<' and '>'
+
+2014-02-04 Joe Jevnik <joejev@gmail.com>
+	* src/machine/memory.c: fixed loadfile to not stop when reading a byte
+	of value 10 or '\n'.
+	* src/machine/processor.c, src/machine/processor.h,
+	src/machine/operations.c, src/machine/operations.h,
+	src/machine/register.h, src/compiler/compiler.c,
+	src/compiler/compiler.h, src/compiler/lexer.c, src/compiler/lexer.h:
+	Changed the comments at the top to be the gnu public license version.
+	* src/compiler/verbose.h: fixed stdio name clash by changing our vprintf
+	to v_printf.
+
+2014-02-04 Jack Pugmire <comradetechnology@gmail.com>
+	* src/machine/memory.c: made load_file less stupid
+	* src/compiler/lexer.c, src/compiler/lexer.h,
+	src/compiler/compiler.h, src/compiler/compiler.c: moved unsafe #include
+	directives into header files
+	* src/compiler/verbose.h: changed v_printf to v_msgf in order to avoid
+	confusion with vprintf
+
+2014-02-07 Joe Jevnik <joejev@gmail.com>
+	* src/machine/memory.c: load_file() now sets stack_start to the next
+	address after the file.
+	* src/machine/processor.c: Moved functions in run() to operators.c
+	* src/machine/processor.h: Added appropriate headers
+	* src/machine/operations.c: Added support for all but HALT and READ
+	* src/machine/operations.h: Added appropriate header
+	* src/compiler/compiler.c: fixed expr_byte_len() to accuratly reflect
+	the lenght of an MSET_MADDR command, added init and free of no_param
+	to be shared amongst all the expr_t's
+	* src/compiler/compiler.h: forward declare no_param
+	* src/compiler/lexer.c: Redefined param_t to not have void *data; now
+	carries a char *str that will collect error messages. Fixed issue where
+	mset would segfault at lexing. Only allocate a single instance of
+	no_param, free_param(no_param) == id(no_param)
+	* src/compiler/lexer.h: redefined param_t
+	* TODO: split TODO into MACHINE TODO and COMPILER TODO to denote the
+	different actions we need to take against each component of the 16c
+	system
+	* examples/mset.16c: Added simple example that writes to, and reads from
+	memory.
+	* examples/stack.16c: Added simple example that pushes onto and pops
+	from the stack.
+
+2014-02-08 Jack Pugmire <comradetechnology@gmail.com>
+	* src/machine/memory.c: changed load_file(), removing call to
+	fstat()
+	* src/machine/processor.h, src/machine/processor.c: added proc_tick()
+
+2014-02-08 Joe Jevnik <joejev@gmail.com>
+	* src/machine/processor.c: Changed 0xff to OP_TERM (no magic numbers)
+	* ChangeLog: Fixed dates for Jack's and My last entries.
+
+2014-02-11 Joe Jevnik <joejev@gmail.com>
+	* src/common/arch.h: Added new opcodes that support refering to the
+	memory address stored in a register.
+	* src/compiler/compiler.c, src/compiler/compiler.h,
+	src/compiler/lexer.c, src/compiler/lexer.h: Added support for the new
+	suite of mset commands. Also made jump commands malloc a new param_1
+	so that jumps dont share the last resolution.
+	* src/machine/operations.c: Changed op_mset() to allow for the
+	dereferenced registers.
+	* TODO: Updated TODO.
+
+2014-02-18 Joe Jevnik <joejev@gmail.com>
+	* src/common/arch.h: Fixed type nomenclature.
+	* src/machine/memory.c: Made all the memory reside in the mmaped file,
+	fixed nomenclature of types.
+	* src/machine/memory.h, src/machine/processor.h,
+	src/machine/register.h, src/compiler/verbose.h
+	src/machine/processor.h, src/machine/operations.h,
+	src/machine/operations.c, src/compiler/lexer.h,
+	src/compiler/lexer.c, src/compiler/compiler.h,
+	src/compiler/compiler.c: Fixed type nomenclature.
+	* TODO: Updated TODO.
+	* src/STYLE.md: Added src/STYLE.md to discuss the style guidelines to
+	follow when working on 16candles.
+
+2014-02-18 Joe Jevnik <joejev@gmail.com>
+	* src/machine/processor.c, src/machine/processor.h: Added timing to
+	the processor, where each tick has a minimum time.
+	* src/machine/memory.c: No longer unlink the file.
+	* src/peripherals/input/input.c: Added a stdin device.
+	* src/peripherals/memecho/memecho.c: Added a device that prints any
+	changes to the memory, virtual and real.
+	* TODO: Updated TODO.
+
+2014-03-05 Joe Jevnik <joejev@gmail.com>
+	* scr/machine/operations.c: Fixed implementation of op_mset() so that it
+	correctly parses all 6 possible paramater arrangements (suffixes).
+	* README.md: Added a section pertaining to additional projects and added
+	h16cc to the list.
+
+2014-03-06 Joe Jevnik <joejev@gmail.com>
+	* src/machine/processor.c: stdin reading thread. Commented out
+	dump_regs() from main().
+	* src/machine/operations.h, src/machine/operations.h: op_read() added
+	* examples/cat.16c: added a new example of a cat program.
+
+2014-03-26 Joe Jevnik <joejev@gmail.com>
+	* src/debugger/*: Started a new debugging repl program for the 16c
+	platform called '16cdb'.
+	* src/machine/operations.c: op_read() now sets the register to 255
+	if nothing was read, as that is outside the ascii range. op_write will
+	also print '\0' instead of taking mod 127 for ranges above 127.
+
+2014-03-26 Joe Jevnik <joejev@gmail.com>
+	* scr/machine/operations.c: op_write() now will only write if the value
+	is in the ascii subset of the c16_words, [0,128].
+	* src/machine/processor.c: Fixed the order that the main to prevent data
+	races on sysmem.mem caused by process_stdin() racing on the memory
+	before it is mapped, or the registers initialized.
+	* src/machine/register.h: Fixed the outdated extern register
+	declerations.
+
+2014-03-27 Joe Jevnik <joejev@gmail.com>
+	* src/debugger/commands.c: Added an inp: function to feed input into the
+	machine.
+	* src/debugger/debug.c: Added the pthread for the stdin, and added a
+	pipe to feed to that thread.
+	* src/debugger/processor.c: Added a new debugging_op_write() that will
+	print in the format of 'machine: %c\n' to seperate the machine's out
+	with the debugger's.
+	* src/machine/processor.c: Updated the dump_regs() function to be more
+	descriptive. Also, fixed the reversed order of subregisers, r*_f
+	and r*_b were flipped.
+	* src/CMakeLists.txt: Added the pthread library to be linked with the
+	debugger.c
+
+2014-03-27 Joe Jevnik <joejev@gmail.com>
+	* src/debugger/debug.h, src/debugger/debug.c: Moved more of the cli
+	interface into this file, changed how commands are formed.
+	* src/debugger/commands.h, src/debugger/commands.c: Changed how evaluate
+	the commands, all commands return void, and take a char **argv, argument
+	parsing is done in before these are called.
+
+2014-03-29 Joe Jevnik <joejev@gmail.com>
+	* src/debbuger/debug.c: Fixed the fprintf() to add argv[1] fixing the
+	undefined behavior in case of a non-valid file.
+	* src/debugger/commands.c: Moved the memset() below all
+	variable declerations.
+
+2014-03-29 Joe Jevnik <joejev@gmail.com>
+	* src/common/arch.h: Fixed the opreg numbers so there is no longer a
+	hole between inp_w and r0_f. This allows us to resolve a string to a
+	regno by iterating over the list of register strings and checking for
+	string equality as seen in parse_regno() in src/debugger/commands.c.
+	* src/debugger/commands.c, src/debugger/commands.h: Fixed the
+	parse_regno() based on the changes to the regnos.
