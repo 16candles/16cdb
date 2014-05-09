@@ -1,0 +1,6 @@
+[submodule "16common"]
+	path = 16common
+	url = https://github.com/16candles/16common
+[submodule "16machine"]
+	path = 16machine
+	url = https://github.com/16candles/16machine

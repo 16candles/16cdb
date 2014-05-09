@@ -18,10 +18,10 @@
 #ifndef C16_DEBUG_H
 #define C16_DEBUG_H
 
-#include "common/arch.h"
-#include "machine/memory.h"
-#include "machine/processor.h"
-#include "machine/register.h"
+#include "../16common/common/arch.h"
+#include "../16machine/machine/memory.h"
+#include "../16machine/machine/processor.h"
+#include "../16machine/machine/register.h"
 #include "commands.h"
 
 #include <stdio.h>

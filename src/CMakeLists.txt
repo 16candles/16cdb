@@ -2,10 +2,10 @@
 # Copyright (c) Joe Jevnik 2014
 
 set(16CDB_FILES debug.c
-                machine/operations.c
-                machine/memory.c
                 commands.c
-                processor.c)
+                processor.c
+                ../16machine/machine/memory.c
+                ../16machine/machine/operations.c)
 
 set(EXECUTABLE_OUTPUT_PATH ${16CANDLES_BINARY_DIR})
 

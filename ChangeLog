@@ -186,3 +186,7 @@
 	string equality as seen in parse_regno() in src/debugger/commands.c.
 	* src/debugger/commands.c, src/debugger/commands.h: Fixed the
 	parse_regno() based on the changes to the regnos.
+
+2014-05-08 Joe Jevnik <joejev@gmail.com>
+	* src/common/arch.h: moved to 16common/common/arch.h
+	* src/machine: moved to 16machine/machine
