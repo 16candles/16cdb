@@ -59,6 +59,86 @@ void sigsegv_handler(int sig){
     siglongjmp(jump,1);
 }
 
+// Converts an opcode into the string command.
+const char *cmdstr(c16_halfword op, bool use_symbols){
+    static const char* const bin_ops[][2] = { { "and",   "&&" },
+                                              { "or",    "||" },
+                                              { "xand",  "!&" },
+                                              { "xor",   "!|" },
+                                              { "lshift","<<" },
+                                              { "rshift",">>" },
+                                              { "add",   "+"  },
+                                              { "sub",   "-"  },
+                                              { "mul",   "*"  },
+                                              { "div",   "/"  },
+                                              { "mod",   "%"  },
+                                              { "min",   ""   },
+                                              { "max",   ""   } };
+    size_t      subindex = (use_symbols) ? 1 : 0;
+    int         n;
+    const char *r;
+    if (op <= OP_MAX_REG_REG){
+        op /= 4;
+        r = bin_ops[op][subindex];
+        if (!r[0]){
+            r = bin_ops[op][0];
+        }
+        return r;
+    }else if (op == OP_SET_LIT || op == OP_SET_REG){
+        return (use_symbols) ? "=" : "set";
+    }else if (op <= OP_LT_REG_REG || op <= OP_SET_REG){
+        op /= 2;
+        switch(op){
+        case OP_INV_:
+            return (use_symbols) ? "~"  : "inv";
+        case OP_INC_:
+            return (use_symbols) ? "++" : "inc";
+        case OP_DEC_:
+            return (use_symbols) ? "--" : "dec";
+        case OP_GT_:
+            return (use_symbols) ? ">"  : "gt";
+        case OP_LT_:
+            return (use_symbols) ? "<"  : "lt";
+        case OP_GTE_:
+            return (use_symbols) ? ">=" : "gte";
+        case OP_LTE_:
+            return (use_symbols) ? "<=" : "lte";
+        case OP_EQ_:
+            return (use_symbols) ? "==" : "eq";
+        case OP_NEQ_:
+            return (use_symbols) ? "!=" : "neq";
+        }
+    }else if ((op >> 1) << 1 == OP_PUSH_){
+        return (use_symbols) ? ":" : "push";
+    }else if (op <= OP_JMPF){
+        switch(op){
+        case OP_JMP:
+            return (use_symbols) ? "=>" : "jmp";
+        case OP_JMPT:
+            return (use_symbols) ? "->" : "jmpt";
+        case OP_JMPF:
+            return (use_symbols) ? "<-" : "jmpf";
+        }
+    }else if (op <= OP_WRITE_REG){
+        return "write";
+    }else if (op <= OP_MSET_MEMREG){
+        return (use_symbols) ? ":=" : "mset";
+    }else if (op == OP_SWAP){
+        return (use_symbols) ? "\\\\" : "swap";
+    }else if (op == OP_POP){
+        return (use_symbols) ? "$" : "pop";
+    }else if (op == OP_PEEK){
+        return (use_symbols) ? "@" : "peek";
+    }else if (op == OP_FLUSH){
+        return (use_symbols) ? "#" : "flush";
+    }else if (op == OP_READ){
+        return "read";
+    }else if (op == OP_NOP){
+        return "nop";
+    }
+    return "";
+}
+
 // Evaluate a line of user input.
 void eval_line(char *s){
     int n,e = 0;

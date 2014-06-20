@@ -37,6 +37,10 @@ extern command commands[];
 // The handler for when the machine crashes.
 void sigsegv_handler(int);
 
+// Return the string that that generates the given instruction, the second
+// argument denotes whether to print with the symbols or not.
+const char *cmdstr(c16_halfword,bool);
+
 // Initializes the registers.
 void init_regs(void);
 

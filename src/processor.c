@@ -18,6 +18,7 @@
 #include "../16machine/machine/processor.h"
 #include "debug.h"
 
+
 // Initializes all registers and subregisters.
 void init_regs(){
     c16_halfword *rs = calloc(32,sizeof(c16_halfword));
@@ -99,6 +100,7 @@ void debugging_op_write(c16_opcode op){
 // return: -1 if an exit opcode was encountered
 int proc_tick(){
     c16_opcode op = sysmem.mem[(*ipt)++];
+    puts(cmdstr(op, false));
     if (op == OP_TERM){ // exit case
         return -1;
     }

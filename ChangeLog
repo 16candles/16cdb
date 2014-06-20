@@ -190,3 +190,8 @@
 2014-05-08 Joe Jevnik <joejev@gmail.com>
 	* src/common/arch.h: moved to 16common/common/arch.h
 	* src/machine: moved to 16machine/machine
+
+2014-06-20 Joe Jevnik <joejev@gmail.com>
+	* src/debug.h, src/debug.c, src/processor.c: Adds the beginning of the
+	disassembler that will tell you as a string what the command that was
+	just executed was.
