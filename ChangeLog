@@ -195,3 +195,10 @@
 	* src/debug.h, src/debug.c, src/processor.c: Adds the beginning of the
 	disassembler that will tell you as a string what the command that was
 	just executed was.
+
+2014-06-29 Joe Jevnik <joejev@gmail.com>
+	* src/debug.h, src/debug.c: Adds getopts for more standardized cmdline
+	interface including help and version. Also adds support for C-d (EOF)
+	to terminate the program; before, this caused a double free.
+	* src/commands.h, src/commands.c: Adds the restart cmd so that users
+	don't need to restard 16cdb to re-run their proram.

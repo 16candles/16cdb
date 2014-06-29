@@ -23,6 +23,9 @@ int       pipe_fds[2];
 // The jump environment.
 jmp_buf   jump;
 
+// The binary file name.
+char     *binary_fl;
+
 // The stdin thread, used to mimic the stdin features on the machine.
 pthread_t input_thread;
 
@@ -72,6 +75,23 @@ void cmd_quit(char **_){
     free_regs();
     free_mem(&sysmem);
     exit(0);
+}
+
+// Restarts the vm.
+void cmd_restart(char **_){
+    FILE *in;
+    void repl(void);
+    void init_regs(void);
+    pthread_cancel(input_thread);
+    free_regs();
+    init_regs();
+    in = fopen(binary_fl,"r");
+    if (!in){
+        fprintf(stderr,"Error: Unable to open file '%s'\n",binary_fl);
+        exit(-1);
+    }
+    load_file(&sysmem,0,in);
+    repl();
 }
 
 // Prints the state of the machines registers to stdout.

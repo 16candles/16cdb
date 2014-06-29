@@ -23,6 +23,9 @@ int       pipe_fds[2];
 // The jump environment.
 jmp_buf   jump;
 
+// The binary file name.
+char     *binary_fl;
+
 // The input thread.
 pthread_t input_thread;
 
@@ -30,20 +33,22 @@ pthread_t input_thread;
 command commands[COMMAND_COUNT] ={
     { "step",cmd_step,0,
       "step            Step the ipt over one full operation"                  },
-    { "s",   cmd_step,0,
+    { "s",cmd_step,0,
       "s               Alias of `step`"                                       },
     { "dump",cmd_dump,0,
       "dump            Prints the values stored in every register"            },
-    { "d",   cmd_dump,0,
+    { "d",cmd_dump,0,
       "d               Alias of `dump`"                                       },
     { "reg", cmd_reg,1,
       "reg REG         Prints the value stored in register REG"               },
-    { "mem", cmd_mem,2,
+    { "mem",cmd_mem,2,
       "mem w|h ADR|REG Prints the word (w) or halfword (h) in mem at ADR|REG" },
     { "inp", cmd_inp,1,
       "inp STR         Feeds STR to the virtual machines standard input"      },
     { "help",cmd_help,0,
       "help            Prints this message"                                   },
+    { "restart",cmd_restart,0,
+      "restart         Restarts the vm."                                      },
     { "?",   cmd_help,0,
       "?               Alias of `help`"                                       },
     { "quit",cmd_quit,0,
@@ -187,8 +192,13 @@ command *resolve_cmd(char *s){
     return NULL;
 }
 
-// Prints a welcome message, then begins the repl.
-void start_debug_repl(){
+// Sets up then begins the repl.
+void start_debug_repl(FILE *in,char *memory_fl){
+    init_regs();
+    init_mem(&sysmem,memory_fl);
+    load_file(&sysmem,0,in);
+    fclose(in);
+    pthread_create(&input_thread,NULL,process_stdin,NULL);
     printf("16cdb 0.0.0.1 (2014.3.26)\nWelcome to the 16 candles debugger:\n\
 type `help` to see a list of commands\n");
     repl();
@@ -197,32 +207,88 @@ type `help` to see a list of commands\n");
 // The read eval print loop.
 void repl(){
     char *s;
-    do{
-        s = readline("> ");
+    for (s = readline(PROMPT_STR);s;s = readline(PROMPT_STR)){
+        if (*s == 0){
+            continue;
+        }
         add_history(s);
         eval_line(s);
         free(s);
-    }while(s);
+    }
+    putchar('\n');
 }
 
+
+const char* const usage_str = "Usage: 16cdb [OPTION] BINARY-FILE";
+
+const char* const help_str = "\
+  -h --help                    Prints the help message.\n\
+  -v --version                 Prints version information.\n\
+  -m --memory-file MEMORY-FILE The mmapped memory file to use.\n\
+  -b --binary-file BINARY-FILE The file to debug.";
+
+const char* const version_str = "16cdb " VERSION_NUMBER " " BUILD_DATE "\n\
+Copyright (C) 2014 Joe Jevnik.\n\
+This is free software; see the source for copying conditions.  There is NO\n\
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.";
+
 int main(int argc,char **argv){
-    FILE *in;
-    int n,cs = 0;
+    FILE  *in;
+    int    n,c,cs = 0,opt_ind;
+    char  *memory_fl = C16_DEFAULT_MEM_FILE;
+    static struct option long_ops[] =
+        { { "help",        no_argument,       0, 'h' },
+          { "version",     no_argument,       0, 'v' },
+          { "memory-file", required_argument, 0, 'm' },
+          { "binary-file", required_argument, 0, 'b' },
+          { 0,             0,                 0,  0  } };
+    binary_fl = NULL;
+    if (argc == 1){
+        puts(usage_str);
+        return -1;
+    }
+    for (;;){
+        opt_ind = 0;
+        c = getopt_long(argc,argv,"hvm:b:",long_ops,&opt_ind);
+        if (c == -1){
+            break;
+        }
+        switch(c){
+        case 'h':
+            puts(usage_str);
+            puts(help_str);
+            return 0;
+        case 'v':
+            puts(version_str);
+            return 0;
+        case 'm':
+            memory_fl = optarg;
+            break;
+        case 'b':
+            binary_fl = optarg;
+            break;
+        case '?':
+            return -1;
+        default:
+            printf("Unknown argument: %c\n",c);
+        }
+    }
+    if (opt_ind < argc && !binary_fl){
+        binary_fl = argv[opt_ind + 1];
+    }else if (!binary_fl){
+        puts("16cdb: No input file");
+    }
     pipe(pipe_fds);
     signal(SIGSEGV,sigsegv_handler);
-    init_regs();
-    init_mem(&sysmem,"/tmp/16cdb");
     if (argc == 1){
         puts("Usage: 16cdb BINARY");
         return 0;
     }
-    in = fopen(argv[1],"r");
+    in = fopen(binary_fl,"r");
     if (!in){
-        fprintf(stderr,"Error: Unable to open file '%s'\n",argv[1]);
+        fprintf(stderr,"Error: Unable to open file '%s'\n",binary_fl);
         return -1;
     }
-    load_file(&sysmem,0,in);
-    pthread_create(&input_thread,NULL,process_stdin,NULL);
-    start_debug_repl();
+    start_debug_repl(in,memory_fl);
     return EXIT_SUCCESS;
 }
