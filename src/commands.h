@@ -41,6 +41,7 @@
 #define HALFREG_START 16
 
 extern jmp_buf jump;
+extern char   *binary_fl;
 
 typedef void cmd_func(char**);
 
@@ -51,7 +52,7 @@ typedef struct {
     char     *help; // The help string.
 } command;
 
-#define COMMAND_COUNT 11
+#define COMMAND_COUNT 12
 
 // The list of commands.
 command commands[COMMAND_COUNT];
@@ -62,6 +63,9 @@ command *resolve_cmd(char*);
 
 // Exits the program.
 void cmd_quit(char**);
+
+// Restarts the vm.
+void cmd_restart(char**);
 
 // Steps through one operation.
 void cmd_step(char**);

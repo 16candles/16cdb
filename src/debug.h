@@ -28,6 +28,13 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <pthread.h>
+#include <getopt.h>
+
+#define VERSION_NUMBER "0.1.0.0"
+#define BUILD_DATE     "2014-06-29"
+
+#define C16_DEFAULT_MEM_FILE "/tmp/16c"
+#define PROMPT_STR "(16cdb)> "
 
 extern int       pipe_fds[2];
 extern pthread_t input_thread;
@@ -46,6 +53,9 @@ void init_regs(void);
 
 // Frees the registers.
 void free_regs(void);
+
+// Sets up then begins the repl.
+void start_repl(FILE*,const char*);
 
 // The debugging read eval print loop.
 void repl(void);
